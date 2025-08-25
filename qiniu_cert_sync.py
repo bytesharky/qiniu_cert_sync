@@ -19,6 +19,7 @@ import requests
 import config
 from hashlib import sha1
 from datetime import datetime
+from datetime import timezone
 from cryptography import x509
 from base64 import urlsafe_b64encode
 from cryptography.hazmat.backends import default_backend
@@ -49,7 +50,9 @@ def get_local_cert_expiry(cert_path: str) -> datetime:
     with open(cert_path, "rb") as f:
         cert_data = f.read()
     cert = x509.load_pem_x509_certificate(cert_data, default_backend())
-    expiry_time = cert.not_valid_after_utc
+    expiry_time = getattr(cert, "not_valid_after_utc", None)
+    if expiry_time is None:
+        expiry_time = cert.not_valid_after.replace(tzinfo=timezone.utc)
     return int(expiry_time.timestamp())
 
 
