@@ -2,8 +2,10 @@ import os
 import os
 import shutil
 
-CONFIG_FILE = "config.py"
-DEFAULT_CONFIG_FILE = "config.default.py"
+# 获取脚本所在目录的绝对路径
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+DEFAULT_CONFIG_FILE = os.path.join(SCRIPT_DIR, "default_config.py")
+CONFIG_FILE = os.path.join(SCRIPT_DIR, "config.py")
 
 # 如果本地 config.py 不存在，则自动生成
 if not os.path.exists(CONFIG_FILE):
