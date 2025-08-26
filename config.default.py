@@ -22,7 +22,7 @@ DEL_EXP = True
 QINIU_API = "https://api.qiniu.com"
 
 # 证书存放路径
-CERT_PATH = "/certs"
+CERT_PATH = "./certs"
 DOMAIN_LIST = {
     "static.example.com":{
         "cert":"example.com.cer",

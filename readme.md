@@ -134,7 +134,7 @@ python qiniu_cert_sync.py
 
     ```bash
     # 创建并启动容器
-    docker run -d \
+    docker run  -e TZ=Asia/Shanghai -d \
         --privileged=true \
         -v /data/docker/qiniu_cert_sync/certs:/qiniu_cert_sync/certs \
         -v /data/docker/qiniu_cert_sync/logs:/qiniu_cert_sync/logs \
@@ -150,5 +150,44 @@ python qiniu_cert_sync.py
     # 停止容器
     docker stop
     ```
+
+### 8. 懒人福利
+
+   ```bash
+    # 拉取我公开的镜像
+    docker pull ccr.ccs.tencentyun.com/sharky/qiniu_cert_sync
+
+    # 创建持久化目录
+    mkdir -p /data/docker/qiniu_cert_sync
+
+    # 创建软连接
+    ln -sf /root/.acme.sh/cert /data/docker/qiniu_cert_sync/certs
+
+    # 写入环境变量
+    echo "QINIU_ACCESS_KEY=你的七牛云AccessKey" > .env
+    echo "QINIU_SECRET_KEY=你的七牛云SecretKey" >> .env
+
+    # 编辑配置文件 config/config.py 中的证书路径，域名列表    
+    # 例如：
+    # CERT_PATH = "./certs"
+    # DOMAIN_LIST = {
+    #     "CDN绑定域名":{
+    #         "cert":"证书路径",
+    #         "key":"密钥路径",
+    #     },
+    #     "www.example.com":{
+    #         "cert":"example.com_ecc/fullchain.cer",
+    #         "key":"example.com_ecc/example.com.key",
+    #     }
+    # }
+
+    # 创建并启动容器
+    docker run  -e TZ=Asia/Shanghai -d \
+        --privileged=true \
+        -v /data/docker/qiniu_cert_sync/certs:/qiniu_cert_sync/certs \
+        -v /data/docker/qiniu_cert_sync/logs:/qiniu_cert_sync/logs \
+        -v /data/docker/qiniu_cert_sync/config:/qiniu_cert_sync/config/ \
+        --name qiniu_cert_sync ccr.ccs.tencentyun.com/sharky/qiniu_cert_sync; 
+   ```
 
 ---
