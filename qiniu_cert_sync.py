@@ -1,24 +1,12 @@
+# 初始化配置
+import init
+init.init_config()
+
 import os
-import os
-import shutil
-
-# 获取脚本所在目录的绝对路径
-SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-DEFAULT_CONFIG_FILE = os.path.join(SCRIPT_DIR, "default_config.py")
-CONFIG_FILE = os.path.join(SCRIPT_DIR, "config.py")
-
-# 如果本地 config.py 不存在，则自动生成
-if not os.path.exists(CONFIG_FILE):
-    if os.path.exists(DEFAULT_CONFIG_FILE):
-        shutil.copy(DEFAULT_CONFIG_FILE, CONFIG_FILE)
-        print(f"生成 {CONFIG_FILE} 成功", "\n")
-    else:
-        raise FileNotFoundError(f"{DEFAULT_CONFIG_FILE} 不存在")
-
 import time
 import hmac
 import requests
-import config
+from config import config
 from hashlib import sha1
 from datetime import datetime
 from datetime import timezone
@@ -164,8 +152,6 @@ def update_domain_cert(domain: str, cert_id: str):
 def sync_cert():
 
     # 1.获取域名列表
-    print("开始查询","\n")
-    
     domain_data = list_domain()
     domains = []
     for index, domain in enumerate(domain_data['domains'], start=1):
@@ -253,10 +239,11 @@ def sync_cert():
                     print(f"[{domain}] 删除过期证书失败, certId={cert_id}", deleteed.get("error"), "\n")
             else:
                 print(f"[{domain}] 证书未过期, certId={cert_id}", "\n")
-# ----------------- 示例运行 -----------------
 
+    
 if __name__ == "__main__":
-    VER = "1.0.0"
+    
+    VER = "1.1.0"
     CFGS = ["1.0.0"]
     print(f"当前脚本版本: {VER}", "\n")
     print(f"配置文件版本: {config.VER}", "\n")
@@ -264,5 +251,10 @@ if __name__ == "__main__":
         print(f"当前配置文件版本不兼容，兼容的配置文件版本: {CFGS}", "\n")
         exit(1)
 
+    TIMESTAMP_START = time.time()
+    print("开始同步证书", timestamp_to_readable(TIMESTAMP_START),"\n")
+
     sync_cert()
-    print("已退出")
+
+    TIMESTAMP_END = time.time()
+    print(f"已完成，耗时{TIMESTAMP_END - TIMESTAMP_START}秒", timestamp_to_readable(TIMESTAMP_END), "\n")

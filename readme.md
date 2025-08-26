@@ -94,8 +94,6 @@ python qiniu_cert_sync.py
 
 配置文件版本: 1.0.0
 
-开始查询 
-
 域名列表 ['static.example.com'] 
 
 [static.example.com] 正在查询域名配置 
@@ -120,9 +118,37 @@ python qiniu_cert_sync.py
 如果你希望定期检查并自动更新证书，可以添加到 **crontab**：
 
 ```bash
+# 每天凌晨 3 点执行一次。
 0 3 * * * /usr/bin/python3 /path/to/project/qiniu_cert_sync.py >> /var/log/qiniu_cert_sync.log 2>&1
 ```
 
-每天凌晨 3 点执行一次。
+### 7. Docker部署（可选）
+
+1. 打包镜像
+
+    ```bash
+    docker build -t qiniu_cert_sync:v1.0.0 .
+    ```
+
+2. 创建启动容器，映射出`.env`、`config.py`
+
+    ```bash
+    # 创建并启动容器
+    docker run -d \
+        --privileged=true \
+        -v /data/docker/qiniu_cert_sync/certs:/qiniu_cert_sync/certs \
+        -v /data/docker/qiniu_cert_sync/logs:/qiniu_cert_sync/logs \
+        -v /data/docker/qiniu_cert_sync/config:/qiniu_cert_sync/config/ \
+        --name qiniu_cert_sync qiniu_cert_sync:v1.0.0;
+
+    # 启动容器
+    docker start
+
+    # 重启容器 
+    docker restart
+
+    # 停止容器
+    docker stop
+    ```
 
 ---
