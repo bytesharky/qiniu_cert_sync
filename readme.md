@@ -11,6 +11,7 @@
 ```txt
 project/
 │── config.default.py
+│── init.py
 │── qiniu_cert_sync.py
 │── requirements.txt
 │── .env.example
@@ -30,9 +31,9 @@ pip install -r requirements.txt
 `requirements.txt` 内容示例：
 
 ```txt
-requests
-cryptography
-python-dotenv
+requests==2.32.5
+cryptography==45.0.6
+python-dotenv==1.1.1
 ```
 
 ---
@@ -127,7 +128,7 @@ python qiniu_cert_sync.py
 1. 打包镜像
 
     ```bash
-    docker build -t qiniu_cert_sync:v1.0.0 .
+    docker build -t qiniu_cert_sync:latest .
     ```
 
 2. 创建启动容器，映射出`.env`、`config.py`
@@ -139,7 +140,7 @@ python qiniu_cert_sync.py
         -v /data/docker/qiniu_cert_sync/certs:/qiniu_cert_sync/certs \
         -v /data/docker/qiniu_cert_sync/logs:/qiniu_cert_sync/logs \
         -v /data/docker/qiniu_cert_sync/config:/qiniu_cert_sync/config/ \
-        --name qiniu_cert_sync qiniu_cert_sync:v1.0.0;
+        --name qiniu_cert_sync qiniu_cert_sync:latest;
 
     # 启动容器
     docker start
@@ -154,40 +155,51 @@ python qiniu_cert_sync.py
 ### 8. 懒人福利
 
    ```bash
-    # 拉取我公开的镜像
-    docker pull ccr.ccs.tencentyun.com/sharky/qiniu_cert_sync
+    # 克隆仓库
+    git clone https://gitee.com/bytesharky/qiniu_cert_sync.git
+    
+    # 为部署脚本添加运行权限
+    cd qiniu_cert_sync/deploy
+    chmod 755 deploy.sh
 
-    # 创建持久化目录
-    mkdir -p /data/docker/qiniu_cert_sync
+    # 运行脚本并根据引导完成部署
+    ./deploy.sh
 
-    # 创建软连接
-    ln -sf /root/.acme.sh/cert /data/docker/qiniu_cert_sync/certs
+    Select language / 选择语言:
+    1) 中文(Chinese)
+    2) English
+    Enter choice (1/2, default 1): 1
+    === Qiniu Cert Sync 部署引导 ===
+    请输入持久化目录地址 (默认: /data/docker/qiniu_cert_sync):
+    请输入证书存放路径 (默认: /root/.acme.sh/cert):
+    请输入容器名称 (默认: qiniu_cert_sync):
+    请输入七牛云 AccessKey:**********
+    请输入七牛云 SecretKey:**********
+    环境变量写入完成:  /data/docker/qiniu_cert_sync/config/.env
+    默认 crontab 已写入 /data/docker/qiniu_cert_sync/config/crontab (每天3点执行)
+    正在拉取镜像...
+    Using default tag: latest
+    latest: Pulling from sharky/qiniu_cert_sync
+    Digest: sha256:d7bad24cf30c8595fd8bd368705c7472ebafb81175f3dd15c51717a1e2b1a17d
+    Status: Image is up to date for ccr.ccs.tencentyun.com/sharky/qiniu_cert_sync:latest
+    ccr.ccs.tencentyun.com/sharky/qiniu_cert_sync:latest
+    已存在容器，正在删除... qiniu_cert_sync
+    qiniu_cert_sync
+    正在启动容器...
+    efacdfd75f33412b66c1159e0fa18ef19a8bb91050d850f9c7a187db23e02a39
 
-    # 写入环境变量
-    echo "QINIU_ACCESS_KEY=你的七牛云AccessKey" > .env
-    echo "QINIU_SECRET_KEY=你的七牛云SecretKey" >> .env
+    === 部署完成 ===
+    持久化目录:  /data/docker/qiniu_cert_sync
+    证书目录:  /root/.acme.sh/cert
+    容器名称:  qiniu_cert_sync
+    你可以用以下命令查看日志: docker logs -f qiniu_cert_sync
 
-    # 编辑配置文件 config/config.py 中的证书路径，域名列表    
-    # 例如：
-    # CERT_PATH = "./certs"
-    # DOMAIN_LIST = {
-    #     "CDN绑定域名":{
-    #         "cert":"证书路径",
-    #         "key":"密钥路径",
-    #     },
-    #     "www.example.com":{
-    #         "cert":"example.com_ecc/fullchain.cer",
-    #         "key":"example.com_ecc/example.com.key",
-    #     }
-    # }
+    请记得根据需要修改以下配置文件：
+    1) /data/docker/qiniu_cert_sync/config/crontab
+    2) /data/docker/qiniu_cert_sync/config/config.py
 
-    # 创建并启动容器
-    docker run  -e TZ=Asia/Shanghai -d \
-        --privileged=true \
-        -v /data/docker/qiniu_cert_sync/certs:/qiniu_cert_sync/certs \
-        -v /data/docker/qiniu_cert_sync/logs:/qiniu_cert_sync/logs \
-        -v /data/docker/qiniu_cert_sync/config:/qiniu_cert_sync/config/ \
-        --name qiniu_cert_sync ccr.ccs.tencentyun.com/sharky/qiniu_cert_sync; 
+    # 或者拉取我公开的镜像手动部署
+    # docker pull ccr.ccs.tencentyun.com/sharky/qiniu_cert_sync
    ```
 
 ---
