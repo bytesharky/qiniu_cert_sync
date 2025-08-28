@@ -21,6 +21,7 @@ def utf8(data):
         return data.encode('utf-8')
     return data
 
+
 def qiniu_sign(path):
     """
     生成 QBox AccessToken
@@ -61,6 +62,7 @@ def qiniu_request(method, path, data=None):
         
     return resp.json() if resp.text else {}
 
+
 def timestamp_to_readable(timestamp):
     """
     将时间戳转换为可读的日期时间格式
@@ -72,7 +74,20 @@ def timestamp_to_readable(timestamp):
         return time.strftime("%Y-%m-%d %H:%M:%S", local_time)
     except (ValueError, TypeError):
         return str(timestamp)
+
+
+def relative_to_absolute(path, base_path):
+    """
+    将给定路径转换为绝对路径。
+    """
+    if os.path.isabs(path):
+        return os.path.normpath(path)
     
+    if not os.path.isabs(base_path):
+        base_path = os.path.abspath(base_path)
+    
+    return os.path.normpath(os.path.join(base_path, path))
+
 # ----------------- 七牛证书操作 -----------------
 
 
@@ -83,12 +98,14 @@ def list_domain():
     path = "/domain"
     return qiniu_request("GET", path)
 
+
 def list_cert():
     """
     获取证书列表
     """
     path = "/sslcert"
     return qiniu_request("GET", path)
+
 
 def get_domain_conf(domain: str):
     """
@@ -186,8 +203,10 @@ def sync_cert():
             local_cert = config.DOMAIN_LIST.get(domain)
             cert_pem = local_cert.get("cert")
             key_pem = local_cert.get("key")
-            cert_pem_full = os.path.join(config.CERT_PATH, cert_pem)
-            cert_key_full = os.path.join(config.CERT_PATH, key_pem)
+            SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+            ABS_PATH = relative_to_absolute(config.CERT_PATH, SCRIPT_DIR)
+            cert_pem_full = os.path.join(ABS_PATH, cert_pem)
+            cert_key_full = os.path.join(ABS_PATH, key_pem)
             if os.path.isfile(cert_pem_full):
                 local_not_after = get_local_cert_expiry(cert_pem_full)
                 local_is_expire = current_time >= local_not_after

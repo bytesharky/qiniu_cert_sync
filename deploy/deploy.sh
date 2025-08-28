@@ -21,8 +21,14 @@ read -p "$MSG_PERSISTENT" DATA_DIR
 DATA_DIR=${DATA_DIR:-/data/docker/qiniu_cert_sync}
 
 # ===== cert dir =====
-read -p "$MSG_CERT" CERT_DIR
-CERT_DIR=${CERT_DIR:-/root/.acme.sh/cert}
+if [ -L "$DATA_DIR/certs" ]; then
+    CERT_DEFAULT_DIR=$(readlink "$DATA_DIR/certs")
+else
+    CERT_DEFAULT_DIR="/root/.acme.sh/cert"
+fi
+
+read -p "$MSG_CERT [$CERT_DEFAULT_DIR]: " CERT_DIR
+CERT_DIR=${CERT_DIR:=$CERT_DEFAULT_DIR}
 
 # ===== container name =====
 read -p "$MSG_CONTAINER" CONTAINER_NAME
@@ -30,7 +36,7 @@ CONTAINER_NAME=${CONTAINER_NAME:-qiniu_cert_sync}
 
 # ===== create directories =====
 mkdir -p "$DATA_DIR" "$DATA_DIR/config" "$DATA_DIR/logs"
-if [ -L "$DATA_DIR/certs" ] || [ -d "$DATA_DIR/certs" ] || [ -f "$DATA_DIR/certs" ]; then
+if [ -d "$DATA_DIR/certs" ] || [ -f "$DATA_DIR/certs" ]; then
     rm -rf "$DATA_DIR/certs"
 fi
 ln -s "$CERT_DIR" "$DATA_DIR/certs"
