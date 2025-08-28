@@ -187,6 +187,9 @@ def sync_cert():
         domain_conf = get_domain_conf(domain)
         https_conf = domain_conf.get("https")
         cert_id = https_conf.get("certId")
+        if cert_id == "":
+            print(f"[{domain}] 当前未绑定证书", "\n")
+            continue
         print(f"[{domain}] 当前绑定证书, certId={cert_id}","\n")
 
         # 3.获取远程证书的过期时间
