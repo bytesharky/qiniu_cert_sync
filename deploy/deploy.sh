@@ -16,6 +16,12 @@ fi
 
 echo "$MSG_TITLE"
 
+# ===== check docker =====
+if ! command -v docker >/dev/null 2>&1; then
+    echo "$MSG_DOCKER_NOT_FOUND"
+    exit 1
+fi
+
 # ===== persistent dir =====
 read -p "$MSG_PERSISTENT" DATA_DIR
 DATA_DIR=${DATA_DIR:-/data/docker/qiniu_cert_sync}
