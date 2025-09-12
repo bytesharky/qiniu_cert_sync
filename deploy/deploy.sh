@@ -24,7 +24,7 @@ fi
 
 # ===== persistent dir =====
 read -p "$MSG_PERSISTENT" DATA_DIR
-DATA_DIR=${DATA_DIR:-/data/docker/qiniu_cert_sync}
+DATA_DIR=${DATA_DIR:-/data/docker/qiniu-cert-sync}
 
 # ===== cert dir =====
 if [ -L "$DATA_DIR/certs" ]; then
@@ -38,7 +38,7 @@ CERT_DIR=${CERT_DIR:=$CERT_DEFAULT_DIR}
 
 # ===== container name =====
 read -p "$MSG_CONTAINER" CONTAINER_NAME
-CONTAINER_NAME=${CONTAINER_NAME:-qiniu_cert_sync}
+CONTAINER_NAME=${CONTAINER_NAME:-qiniu-cert-sync}
 
 # ===== create directories =====
 mkdir -p "$DATA_DIR" "$DATA_DIR/config" "$DATA_DIR/logs"
@@ -80,14 +80,14 @@ fi
 if [[ "$OVERWRITE_CRON" =~ ^[Yy]$ ]]; then
     cat > "$CRONTAB_FILE" <<EOF
 # Default crontab for Qiniu Cert Sync
-0 3 * * * python /qiniu_cert_sync/qiniu_cert_sync.py >> /qiniu_cert_sync/logs/qiniu_cert_sync.log 2>&1
+0 3 * * * python /qiniu-cert-sync/qiniu-cert-sync.py >> /qiniu-cert-sync/logs/qiniu-cert-sync.log 2>&1
 EOF
     printf "$MSG_CRON_WRITTEN\n" "$CRONTAB_FILE"
 fi
 
 # ===== pull image =====
 echo "$MSG_PULL"
-docker pull ccr.ccs.tencentyun.com/sharky/qiniu_cert_sync
+docker pull ccr.ccs.tencentyun.com/sharky/qiniu-cert-sync
 
 # ===== remove old container =====
 if [ "$(docker ps -aq -f name=$CONTAINER_NAME)" ]; then
@@ -100,11 +100,11 @@ echo "$MSG_START"
 docker run -d \
     -e TZ=Asia/Shanghai \
     --privileged=true \
-    -v "$DATA_DIR/certs:/qiniu_cert_sync/certs" \
-    -v "$DATA_DIR/logs:/qiniu_cert_sync/logs" \
-    -v "$DATA_DIR/config:/qiniu_cert_sync/config" \
+    -v "$DATA_DIR/certs:/qiniu-cert-sync/certs" \
+    -v "$DATA_DIR/logs:/qiniu-cert-sync/logs" \
+    -v "$DATA_DIR/config:/qiniu-cert-sync/config" \
     --name "$CONTAINER_NAME" \
-    ccr.ccs.tencentyun.com/sharky/qiniu_cert_sync
+    ccr.ccs.tencentyun.com/sharky/qiniu-cert-sync
 
 # ===== summary =====
 echo ""

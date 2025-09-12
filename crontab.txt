@@ -1,2 +1,2 @@
 # Run the specified task every day at 3:00 AM
-0 3 * * * python /qiniu_cert_sync/qiniu_cert_sync.py >> /qiniu_cert_sync/logs/qiniu_cert_sync.log 2>&1
+0 3 * * * python /qiniu-cert-sync/qiniu-cert-sync.py >> /qiniu-cert-sync/logs/qiniu-cert-sync.log 2>&1

@@ -3,7 +3,7 @@ FROM python:3.9-alpine
 # 升级Alpine系统包以修复已知漏洞
 RUN apk update && apk upgrade --no-cache
 
-WORKDIR /qiniu_cert_sync
+WORKDIR /qiniu-cert-sync
 
 # 安装Python依赖
 COPY requirements.txt .
@@ -13,7 +13,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY .env.example .
 COPY config.default.py .
 COPY init.py .
-COPY qiniu_cert_sync.py .
+COPY qiniu-cert-sync.py .
 COPY crontab.txt .
 COPY start.sh .
 

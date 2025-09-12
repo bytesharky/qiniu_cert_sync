@@ -7,8 +7,8 @@ if [ -z "$1" ]; then
 fi
 
 TAG=$1
-IMAGE_NAME=qiniu_cert_sync
-REGISTRY=ccr.ccs.tencentyun.com/sharky
+IMAGE_NAME=sharky/qiniu-cert-sync
+REGISTRY=ccr.ccs.tencentyun.com
 
 echo ">>> 构建镜像: $IMAGE_NAME:$TAG"
 docker build -t $IMAGE_NAME:$TAG .
